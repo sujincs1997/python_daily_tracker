@@ -113,6 +113,11 @@ class TaskHistoryView(QWidget):
         actions_layout = QHBoxLayout()
         actions_layout.setSpacing(10)
         
+        self.btn_new = QPushButton("New Task", self)
+        self.btn_new.setObjectName("PrimaryButton")
+        self.btn_new.clicked.connect(self.create_new_task_redirect)
+        actions_layout.addWidget(self.btn_new)
+        
         self.btn_start = QPushButton("Start/Resume Timer", self)
         self.btn_start.setObjectName("SuccessButton")
         self.btn_start.clicked.connect(self.start_selected_task)
@@ -136,6 +141,10 @@ class TaskHistoryView(QWidget):
         actions_layout.addWidget(self.btn_delete)
         
         layout.addLayout(actions_layout)
+
+    def create_new_task_redirect(self):
+        """Redirects to the New Task tab."""
+        self.parentWidget().parentWidget().nav_list.setCurrentRow(1)
 
     def populate_combos(self):
         """Loads items dynamically without triggering recursive filters."""

@@ -16,6 +16,11 @@ class TaskFormView(QWidget):
         self.editing_task_id = None
         
         self.setup_ui()
+        
+        # Listen to active ticks and timer status changes
+        self.controller.timer_service.tick.connect(self.update_form_timer_display)
+        self.controller.timer_service.status_changed.connect(self.update_form_timer_buttons)
+        
         self.prepare_new_task()
 
     def setup_ui(self):
@@ -26,7 +31,7 @@ class TaskFormView(QWidget):
         # Heading
         self.lbl_heading = QLabel("Create New Task", self)
         self.lbl_heading.setObjectName("SectionHeading")
-        main_layout.addWidget(self.lbl_heading)
+        main_layout.addWidget(heading) if 'heading' in locals() else main_layout.addWidget(self.lbl_heading)
         
         # Scroll Area for Form
         scroll = QScrollArea(self)
@@ -58,6 +63,11 @@ class TaskFormView(QWidget):
         # Created Date Display
         self.lbl_created_date = QLabel("Date: " + datetime.now().strftime("%Y-%m-%d"), self.card_auto)
         auto_layout.addWidget(self.lbl_created_date)
+        
+        # Form running clock
+        self.lbl_form_clock = QLabel("00:00:00", self.card_auto)
+        self.lbl_form_clock.setStyleSheet("font-size: 18px; font-family: monospace; font-weight: bold; color: #7aa2f7; margin-left: 20px;")
+        auto_layout.addWidget(self.lbl_form_clock)
         
         form_layout.addWidget(self.card_auto)
 
@@ -166,13 +176,22 @@ class TaskFormView(QWidget):
         self.btn_save.clicked.connect(self.save_task)
         buttons_layout.addWidget(self.btn_save)
         
-        self.btn_start = QPushButton("Start Task Timer", form_container)
-        self.btn_start.setObjectName("SuccessButton")
-        self.btn_start.clicked.connect(self.start_task_timer)
-        buttons_layout.addWidget(self.btn_start)
+        self.btn_pause = QPushButton("Pause Timer", form_container)
+        self.btn_pause.clicked.connect(self.pause_form_timer)
+        buttons_layout.addWidget(self.btn_pause)
         
-        self.btn_cancel = QPushButton("Clear / Reset", form_container)
-        self.btn_cancel.clicked.connect(self.prepare_new_task)
+        self.btn_resume = QPushButton("Resume Timer", form_container)
+        self.btn_resume.setObjectName("SuccessButton")
+        self.btn_resume.clicked.connect(self.resume_form_timer)
+        buttons_layout.addWidget(self.btn_resume)
+        
+        self.btn_stop = QPushButton("Stop & Save", form_container)
+        self.btn_stop.setObjectName("DangerButton")
+        self.btn_stop.clicked.connect(self.stop_form_timer)
+        buttons_layout.addWidget(self.btn_stop)
+        
+        self.btn_cancel = QPushButton("Discard Task", form_container)
+        self.btn_cancel.clicked.connect(self.discard_task)
         buttons_layout.addWidget(self.btn_cancel)
         
         form_layout.addLayout(buttons_layout)
@@ -214,29 +233,69 @@ class TaskFormView(QWidget):
             self.cmb_status.addItem(s)
 
     def prepare_new_task(self):
-        """Initializes empty form values for a new task."""
-        self.editing_task_id = None
-        self.lbl_heading.setText("Create New Task")
+        """Prepares a new task, starting the timer immediately if no active timer is running."""
+        # 1. Check if a timer is running
+        if self.controller.timer_service.is_running:
+            active_uuid = self.controller.timer_service.current_task_uuid
+            active_task = self.controller.task_controller.get_task_by_uuid(active_uuid)
+            active_title = active_task["title"] if active_task else "Running Task"
+            
+            reply = QMessageBox.question(
+                self, "Timer Running",
+                f"A timer is already running for task:\n'{active_title}'\n\nWould you like to stop it and start a new task?",
+                QMessageBox.Yes | QMessageBox.No, QMessageBox.No
+            )
+            
+            if reply == QMessageBox.Yes:
+                self.controller.auto_save_active_task()
+                self.controller.timer_service.stop()
+            else:
+                # Load the currently running task to edit it
+                if active_task:
+                    self.load_task_to_edit(active_task["id"])
+                return
+
+        # 2. Get defaults from DB
+        projects = self.controller.settings_controller.get_all_projects(include_archived=False)
+        categories = self.controller.settings_controller.get_all_categories()
+        assignees = self.controller.settings_controller.get_all_assigned_by()
         
-        self.populate_combos()
-        
-        # Clear fields
-        self.txt_title.clear()
-        self.txt_desc.clear()
-        self.txt_remarks.clear()
-        self.spin_est.setValue(0.0)
-        self.slider_comp.setValue(0)
-        
-        # Set auto-fields
-        self.lbl_uuid.setText(f"UUID: {str(uuid.uuid4())}")
+        if not projects or not categories or not assignees:
+            QMessageBox.critical(
+                self, "Configuration Required",
+                "Please configure at least one active Project, Category, and Assigned By profile in Settings before starting a task."
+            )
+            # Redirect to Settings
+            main_win = self.parentWidget().parentWidget()
+            main_win.nav_list.setCurrentRow(10) # Settings index
+            return
+
+        # Create task immediately in DB
         next_num = self.controller.task_controller.get_next_task_number()
-        self.lbl_task_num.setText(f"Task #: {next_num}")
-        self.lbl_created_date.setText("Date: " + datetime.now().strftime("%Y-%m-%d"))
+        default_title = f"Tracking Task {next_num}"
         
-        self.cmb_status.setCurrentText("Not Started")
-        self.cmb_priority.setCurrentText("Medium")
+        task_data = {
+            "uuid": str(uuid.uuid4()),
+            "task_number": next_num,
+            "title": default_title,
+            "description": "",
+            "category_id": categories[0]["id"],
+            "project_id": projects[0]["id"],
+            "assigned_by_id": assignees[0]["id"],
+            "priority": "Medium",
+            "status": "In Progress",
+            "completion": 0,
+            "duration": 0,
+            "remarks": ""
+        }
         
-        self.btn_start.setEnabled(True)
+        new_task = self.controller.task_controller.create_task(task_data)
+        if new_task:
+            self.editing_task_id = new_task["id"]
+            # Start timer
+            self.controller.timer_service.start(new_task["id"], new_task["uuid"], 0)
+            # Load task details into fields
+            self.load_task_to_edit(new_task["id"])
 
     def load_task_to_edit(self, task_id: int):
         """Fills form fields with existing task details to perform edits."""
@@ -272,11 +331,7 @@ class TaskFormView(QWidget):
         self.slider_comp.setValue(task["completion"] // 10)
         self.txt_remarks.setText(task["remarks"])
         
-        # Disable starting timer directly on completed/cancelled tasks
-        if task["status"] in ["Completed", "Cancelled"]:
-            self.btn_start.setEnabled(False)
-        else:
-            self.btn_start.setEnabled(True)
+        self.update_form_timer_buttons()
 
     def validate_inputs(self) -> bool:
         """Checks for mandatory task creation fields."""
@@ -336,29 +391,109 @@ class TaskFormView(QWidget):
                 
         return None
 
-    def start_task_timer(self):
-        """Saves current task details and starts the time tracker."""
-        # 1. Warn if a timer is already running
-        if self.controller.timer_service.is_running:
-            QMessageBox.warning(
-                self, "Timer Warning", 
-                "An active timer is already running. Please stop or pause the active timer before starting a new one."
-            )
-            return
+    @Slot(str, int)
+    def update_form_timer_display(self, formatted_time: str, elapsed_seconds: int):
+        """Updates the clock label inside the form if this task is the running task."""
+        if self.editing_task_id and self.controller.timer_service.current_task_id == self.editing_task_id:
+            self.lbl_form_clock.setText(formatted_time)
 
-        # 2. Save active task details
-        task = self.save_task()
-        if not task:
-            return  # Save failed or validation issue
-            
-        # 3. Start timer service
-        # Set status to In Progress
-        self.controller.task_controller.update_task(task["id"], {"status": "In Progress"})
-        self.controller.timer_service.start(task["id"], task["uuid"], task["duration"])
+    def update_form_timer_buttons(self):
+        """Updates the state of timer control buttons on the form."""
+        is_running = self.controller.timer_service.is_running
+        active_task_id = self.controller.timer_service.current_task_id
         
-        # 4. Notify user and switch pane
-        QMessageBox.information(self, "Timer Started", f"Timer is now running for: {task['title']}")
-        self.parentWidget().parentWidget().nav_list.setCurrentRow(2) # Switch to Running Task view
+        # If this task is the active task
+        is_this_active = (self.editing_task_id and active_task_id == self.editing_task_id)
+        
+        if is_this_active and is_running:
+            is_paused = self.controller.timer_service.is_paused
+            self.btn_pause.setEnabled(not is_paused)
+            self.btn_resume.setEnabled(is_paused)
+            self.btn_stop.setEnabled(True)
+            self.lbl_form_clock.setVisible(True)
+        else:
+            self.btn_pause.setEnabled(False)
+            self.btn_resume.setEnabled(False)
+            self.btn_stop.setEnabled(False)
+            self.lbl_form_clock.setVisible(False)
+            
+    def pause_form_timer(self):
+        self.controller.timer_service.pause()
+        self.update_form_timer_buttons()
+        
+    def resume_form_timer(self):
+        self.controller.timer_service.resume()
+        self.update_form_timer_buttons()
+        
+    def stop_form_timer(self):
+        """Stops the timer, prompts for final status, and saves."""
+        live_remarks = self.txt_remarks.toPlainText().strip()
+        live_comp = self.slider_comp.value() * 10
+        
+        stats = self.controller.timer_service.stop()
+        if not stats:
+            return
+            
+        msg_box = QMessageBox(self)
+        msg_box.setWindowTitle("Timer Stopped")
+        msg_box.setText(f"Timer stopped for task.\nTotal Duration: {stats['hours']} hrs, {stats['minutes']} mins.\n\nSet final task status:")
+        btn_completed = msg_box.addButton("Completed", QMessageBox.YesRole)
+        btn_paused = msg_box.addButton("Paused", QMessageBox.NoRole)
+        btn_cancel = msg_box.addButton("Cancelled", QMessageBox.RejectRole)
+        
+        msg_box.exec()
+        
+        if msg_box.clickedButton() == btn_completed:
+            status_value = "Completed"
+            live_comp = 100
+        elif msg_box.clickedButton() == btn_paused:
+            status_value = "Paused"
+        elif msg_box.clickedButton() == btn_cancel:
+            status_value = "Cancelled"
+            
+        self.cmb_status.setCurrentText(status_value)
+        self.slider_comp.setValue(live_comp // 10)
+        
+        # Save task final details
+        self.controller.task_controller.update_task(
+            task_id=stats["task_id"],
+            data={
+                "duration": stats["duration"],
+                "start_time": stats["start_time"],
+                "end_time": stats["end_time"],
+                "status": status_value,
+                "completion": live_comp,
+                "remarks": live_remarks,
+                "title": self.txt_title.text().strip(),
+                "description": self.txt_desc.toPlainText().strip(),
+                "category_id": self.cmb_category.currentData(),
+                "project_id": self.cmb_project.currentData(),
+                "assigned_by_id": self.cmb_assigned_by.currentData(),
+                "priority": self.cmb_priority.currentText()
+            }
+        )
+        
+        QMessageBox.information(self, "Task Saved", "Task logs updated and successfully saved in SQLite database.")
+        self.update_form_timer_buttons()
+        self.parentWidget().parentWidget().nav_list.setCurrentRow(3)
+        
+    def discard_task(self):
+        """Stops the timer and deletes this task log from the database."""
+        if not self.editing_task_id:
+            return
+            
+        reply = QMessageBox.question(
+            self, "Discard Task Log",
+            "Are you sure you want to discard this task log? All time tracked for this session will be permanently deleted.",
+            QMessageBox.Yes | QMessageBox.No, QMessageBox.No
+        )
+        
+        if reply == QMessageBox.Yes:
+            if self.controller.timer_service.current_task_id == self.editing_task_id:
+                self.controller.timer_service.stop()
+            self.controller.task_controller.delete_task(self.editing_task_id)
+            QMessageBox.information(self, "Discarded", "Task log discarded and deleted.")
+            self.prepare_new_task()
 
 
 class ActiveTimerWidget(QWidget):
