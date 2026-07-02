@@ -1,0 +1,45 @@
+2026-07-02 14:28:45,218 - daily_tracker - INFO - config.py:32 - Config file not found, creating default config.
+2026-07-02 14:28:45,219 - daily_tracker - INFO - config.py:55 - Configuration saved successfully.
+2026-07-02 14:28:45,469 - daily_tracker - INFO - main.py:23 - Starting Daily Office Work Tracker application...
+2026-07-02 14:28:45,470 - daily_tracker - INFO - connection.py:25 - Initializing database engine at: D:\SUJIN\Professional\python_daily_tracker\dist\DailyOfficeWorkTracker\_internal\tracker.db
+2026-07-02 14:28:45,734 - daily_tracker - INFO - connection.py:35 - Database tables initialized successfully.
+2026-07-02 14:28:45,736 - daily_tracker - INFO - connection.py:35 - Database tables initialized successfully.
+2026-07-02 14:28:45,757 - daily_tracker - INFO - main.py:17 - Database is empty. Seeding default data...
+2026-07-02 14:28:45,762 - daily_tracker - INFO - connection.py:35 - Database tables initialized successfully.
+2026-07-02 14:28:45,763 - daily_tracker - INFO - connection.py:35 - Database tables initialized successfully.
+2026-07-02 14:28:45,763 - daily_tracker - INFO - seed_db.py:19 - Seeding categories...
+2026-07-02 14:28:45,767 - daily_tracker - INFO - seed_db.py:24 - Added category: Design
+2026-07-02 14:28:45,772 - daily_tracker - INFO - seed_db.py:24 - Added category: GIS
+2026-07-02 14:28:45,774 - daily_tracker - INFO - seed_db.py:24 - Added category: Development
+2026-07-02 14:28:45,775 - daily_tracker - INFO - seed_db.py:24 - Added category: QA
+2026-07-02 14:28:45,776 - daily_tracker - INFO - seed_db.py:24 - Added category: Documentation
+2026-07-02 14:28:45,778 - daily_tracker - INFO - seed_db.py:24 - Added category: Meeting
+2026-07-02 14:28:45,779 - daily_tracker - INFO - seed_db.py:24 - Added category: Site Work
+2026-07-02 14:28:45,780 - daily_tracker - INFO - seed_db.py:24 - Added category: Research
+2026-07-02 14:28:45,782 - daily_tracker - INFO - seed_db.py:24 - Added category: Training
+2026-07-02 14:28:45,783 - daily_tracker - INFO - seed_db.py:24 - Added category: Support
+2026-07-02 14:28:45,784 - daily_tracker - INFO - seed_db.py:24 - Added category: Administration
+2026-07-02 14:28:45,785 - daily_tracker - INFO - seed_db.py:24 - Added category: Other
+2026-07-02 14:28:45,785 - daily_tracker - INFO - seed_db.py:38 - Seeding projects...
+2026-07-02 14:28:45,788 - daily_tracker - INFO - seed_db.py:43 - Added project: FTTH Project
+2026-07-02 14:28:45,790 - daily_tracker - INFO - seed_db.py:43 - Added project: GIS Migration
+2026-07-02 14:28:45,791 - daily_tracker - INFO - seed_db.py:43 - Added project: Telecom Survey
+2026-07-02 14:28:45,793 - daily_tracker - INFO - seed_db.py:43 - Added project: Utility Mapping
+2026-07-02 14:28:45,794 - daily_tracker - INFO - seed_db.py:43 - Added project: Internal Development
+2026-07-02 14:28:45,796 - daily_tracker - INFO - seed_db.py:43 - Added project: Customer Support
+2026-07-02 14:28:45,796 - daily_tracker - INFO - seed_db.py:56 - Seeding assigned_by...
+2026-07-02 14:28:45,798 - daily_tracker - INFO - seed_db.py:61 - Added assigned_by: Manager
+2026-07-02 14:28:45,800 - daily_tracker - INFO - seed_db.py:61 - Added assigned_by: Team Lead
+2026-07-02 14:28:45,802 - daily_tracker - INFO - seed_db.py:61 - Added assigned_by: Client
+2026-07-02 14:28:45,803 - daily_tracker - INFO - seed_db.py:61 - Added assigned_by: Self
+2026-07-02 14:28:45,804 - daily_tracker - INFO - seed_db.py:61 - Added assigned_by: Other
+2026-07-02 14:28:45,818 - daily_tracker - INFO - seed_db.py:66 - Seeding complete.
+2026-07-02 14:29:46,126 - daily_tracker - INFO - connection.py:35 - Database tables initialized successfully.
+2026-07-02 14:30:46,117 - daily_tracker - INFO - connection.py:35 - Database tables initialized successfully.
+2026-07-02 14:31:46,125 - daily_tracker - INFO - connection.py:35 - Database tables initialized successfully.
+2026-07-02 14:32:46,133 - daily_tracker - INFO - connection.py:35 - Database tables initialized successfully.
+2026-07-02 14:33:46,148 - daily_tracker - INFO - connection.py:35 - Database tables initialized successfully.
+2026-07-02 14:34:46,137 - daily_tracker - INFO - connection.py:35 - Database tables initialized successfully.
+2026-07-02 14:35:46,143 - daily_tracker - INFO - connection.py:35 - Database tables initialized successfully.
+2026-07-02 14:36:46,140 - daily_tracker - INFO - connection.py:35 - Database tables initialized successfully.
+2026-07-02 14:37:46,140 - daily_tracker - INFO - connection.py:35 - Database tables initialized successfully.
