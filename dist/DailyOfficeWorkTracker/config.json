@@ -1,0 +1,27 @@
+{
+    "theme": "dark",
+    "working_hours": 8.0,
+    "priorities": [
+        "Low",
+        "Medium",
+        "High",
+        "Critical"
+    ],
+    "statuses": [
+        "Not Started",
+        "In Progress",
+        "Paused",
+        "Completed",
+        "Cancelled"
+    ],
+    "notifications": {
+        "task_duration_warning": true,
+        "task_warning_hours": 2,
+        "break_reminder": true,
+        "break_interval_minutes": 90,
+        "eod_reminder": true,
+        "incomplete_task_reminder": true,
+        "eod_time": "17:30"
+    },
+    "db_path": "tracker.db"
+}

@@ -1,0 +1,169 @@
+2026-07-02 14:12:07,381 - daily_tracker - INFO - config.py:31 - Config file not found, creating default config.
+2026-07-02 14:12:19,737 - daily_tracker - INFO - config.py:32 - Config file not found, creating default config.
+2026-07-02 14:12:19,738 - daily_tracker - INFO - config.py:55 - Configuration saved successfully.
+2026-07-02 14:17:17,507 - daily_tracker - INFO - verify_backend.py:16 - Initializing backend verification checks...
+2026-07-02 14:17:17,507 - daily_tracker - INFO - connection.py:25 - Initializing database engine at: D:\SUJIN\Professional\python_daily_tracker\tracker.db
+2026-07-02 14:17:17,695 - daily_tracker - INFO - connection.py:35 - Database tables initialized successfully.
+2026-07-02 14:17:17,695 - daily_tracker - INFO - verify_backend.py:21 - Database file located at: D:\SUJIN\Professional\python_daily_tracker\tracker.db
+2026-07-02 14:17:17,696 - daily_tracker - INFO - verify_backend.py:29 - Testing Project operations...
+2026-07-02 14:17:17,698 - daily_tracker - INFO - connection.py:35 - Database tables initialized successfully.
+2026-07-02 14:17:17,717 - daily_tracker - INFO - connection.py:35 - Database tables initialized successfully.
+2026-07-02 14:17:17,737 - daily_tracker - INFO - settings_controller.py:56 - Project 'Test Verification Project' added successfully.
+2026-07-02 14:17:17,740 - daily_tracker - INFO - connection.py:35 - Database tables initialized successfully.
+2026-07-02 14:17:17,742 - daily_tracker - INFO - connection.py:35 - Database tables initialized successfully.
+2026-07-02 14:17:17,766 - daily_tracker - INFO - settings_controller.py:86 - Project ID 1 updated successfully.
+2026-07-02 14:17:17,769 - daily_tracker - INFO - connection.py:35 - Database tables initialized successfully.
+2026-07-02 14:17:17,770 - daily_tracker - INFO - verify_backend.py:53 - Testing Category operations...
+2026-07-02 14:17:17,772 - daily_tracker - INFO - connection.py:35 - Database tables initialized successfully.
+2026-07-02 14:17:17,775 - daily_tracker - INFO - connection.py:35 - Database tables initialized successfully.
+2026-07-02 14:17:17,795 - daily_tracker - INFO - settings_controller.py:138 - Category 'Test Category' added successfully.
+2026-07-02 14:17:17,796 - daily_tracker - INFO - connection.py:35 - Database tables initialized successfully.
+2026-07-02 14:17:17,798 - daily_tracker - INFO - verify_backend.py:65 - Testing Assignee operations...
+2026-07-02 14:17:17,799 - daily_tracker - INFO - connection.py:35 - Database tables initialized successfully.
+2026-07-02 14:17:17,803 - daily_tracker - INFO - connection.py:35 - Database tables initialized successfully.
+2026-07-02 14:17:17,821 - daily_tracker - INFO - settings_controller.py:192 - Assigned By 'Test Lead Guy' added successfully.
+2026-07-02 14:17:17,823 - daily_tracker - INFO - connection.py:35 - Database tables initialized successfully.
+2026-07-02 14:17:17,824 - daily_tracker - INFO - verify_backend.py:77 - Testing Task creation and tracking...
+2026-07-02 14:17:17,826 - daily_tracker - INFO - connection.py:35 - Database tables initialized successfully.
+2026-07-02 14:17:17,842 - daily_tracker - INFO - connection.py:35 - Database tables initialized successfully.
+2026-07-02 14:17:17,844 - daily_tracker - INFO - connection.py:35 - Database tables initialized successfully.
+2026-07-02 14:17:17,869 - daily_tracker - INFO - task_controller.py:87 - Task 'Backend Verification Task Run' created successfully as TASK-0001.
+2026-07-02 14:17:17,876 - daily_tracker - INFO - connection.py:35 - Database tables initialized successfully.
+2026-07-02 14:17:17,885 - daily_tracker - INFO - verify_backend.py:106 - Testing Dashboard Statistics calculation...
+2026-07-02 14:17:17,886 - daily_tracker - INFO - connection.py:35 - Database tables initialized successfully.
+2026-07-02 14:17:17,925 - daily_tracker - INFO - verify_backend.py:112 - Testing CSV/Excel Reports generation...
+2026-07-02 14:17:17,994 - daily_tracker - INFO - import_export_service.py:314 - CSV exported successfully to test_productivity.csv
+2026-07-02 14:17:18,758 - daily_tracker - INFO - import_export_service.py:327 - Excel exported successfully to test_productivity.xlsx
+2026-07-02 14:17:18,793 - daily_tracker - INFO - import_export_service.py:434 - PDF exported successfully to test_productivity.pdf
+2026-07-02 14:17:18,795 - daily_tracker - INFO - verify_backend.py:147 - Cleaning up verification items from database...
+2026-07-02 14:17:18,797 - daily_tracker - INFO - connection.py:35 - Database tables initialized successfully.
+2026-07-02 14:17:18,797 - daily_tracker - ERROR - connection.py:59 - Database transaction error: name 'Task' is not defined
+2026-07-02 14:19:28,506 - daily_tracker - INFO - verify_backend.py:17 - Initializing backend verification checks...
+2026-07-02 14:19:28,506 - daily_tracker - INFO - connection.py:25 - Initializing database engine at: D:\SUJIN\Professional\python_daily_tracker\tracker.db
+2026-07-02 14:19:28,578 - daily_tracker - INFO - connection.py:35 - Database tables initialized successfully.
+2026-07-02 14:19:28,578 - daily_tracker - INFO - verify_backend.py:22 - Database file located at: D:\SUJIN\Professional\python_daily_tracker\tracker.db
+2026-07-02 14:19:28,578 - daily_tracker - INFO - verify_backend.py:30 - Testing Project operations...
+2026-07-02 14:19:28,580 - daily_tracker - INFO - connection.py:35 - Database tables initialized successfully.
+2026-07-02 14:19:28,599 - daily_tracker - INFO - connection.py:35 - Database tables initialized successfully.
+2026-07-02 14:19:28,603 - daily_tracker - WARNING - settings_controller.py:50 - Project 'Test Verification Project' already exists.
+2026-07-02 14:20:45,653 - daily_tracker - INFO - verify_backend.py:17 - Initializing backend verification checks...
+2026-07-02 14:20:45,653 - daily_tracker - INFO - connection.py:25 - Initializing database engine at: D:\SUJIN\Professional\python_daily_tracker\tracker.db
+2026-07-02 14:20:45,773 - daily_tracker - INFO - connection.py:35 - Database tables initialized successfully.
+2026-07-02 14:20:45,773 - daily_tracker - INFO - verify_backend.py:22 - Database file located at: D:\SUJIN\Professional\python_daily_tracker\tracker.db
+2026-07-02 14:20:45,774 - daily_tracker - INFO - verify_backend.py:30 - Testing Project operations...
+2026-07-02 14:20:45,775 - daily_tracker - INFO - connection.py:35 - Database tables initialized successfully.
+2026-07-02 14:20:45,785 - daily_tracker - INFO - connection.py:35 - Database tables initialized successfully.
+2026-07-02 14:20:45,802 - daily_tracker - INFO - settings_controller.py:56 - Project 'Test Verification Project' added successfully.
+2026-07-02 14:20:45,803 - daily_tracker - INFO - connection.py:35 - Database tables initialized successfully.
+2026-07-02 14:20:45,805 - daily_tracker - INFO - connection.py:35 - Database tables initialized successfully.
+2026-07-02 14:20:45,824 - daily_tracker - INFO - settings_controller.py:86 - Project ID 1 updated successfully.
+2026-07-02 14:20:45,826 - daily_tracker - INFO - connection.py:35 - Database tables initialized successfully.
+2026-07-02 14:20:45,827 - daily_tracker - INFO - verify_backend.py:54 - Testing Category operations...
+2026-07-02 14:20:45,827 - daily_tracker - INFO - connection.py:35 - Database tables initialized successfully.
+2026-07-02 14:20:45,829 - daily_tracker - INFO - connection.py:35 - Database tables initialized successfully.
+2026-07-02 14:20:45,845 - daily_tracker - INFO - settings_controller.py:138 - Category 'Test Category' added successfully.
+2026-07-02 14:20:45,846 - daily_tracker - INFO - connection.py:35 - Database tables initialized successfully.
+2026-07-02 14:20:45,847 - daily_tracker - INFO - verify_backend.py:66 - Testing Assignee operations...
+2026-07-02 14:20:45,848 - daily_tracker - INFO - connection.py:35 - Database tables initialized successfully.
+2026-07-02 14:20:45,851 - daily_tracker - INFO - connection.py:35 - Database tables initialized successfully.
+2026-07-02 14:20:45,868 - daily_tracker - INFO - settings_controller.py:192 - Assigned By 'Test Lead Guy' added successfully.
+2026-07-02 14:20:45,869 - daily_tracker - INFO - connection.py:35 - Database tables initialized successfully.
+2026-07-02 14:20:45,871 - daily_tracker - INFO - verify_backend.py:78 - Testing Task creation and tracking...
+2026-07-02 14:20:45,872 - daily_tracker - INFO - connection.py:35 - Database tables initialized successfully.
+2026-07-02 14:20:45,881 - daily_tracker - INFO - connection.py:35 - Database tables initialized successfully.
+2026-07-02 14:20:45,882 - daily_tracker - INFO - connection.py:35 - Database tables initialized successfully.
+2026-07-02 14:20:45,901 - daily_tracker - INFO - task_controller.py:87 - Task 'Backend Verification Task Run' created successfully as TASK-0001.
+2026-07-02 14:20:45,905 - daily_tracker - INFO - connection.py:35 - Database tables initialized successfully.
+2026-07-02 14:20:45,909 - daily_tracker - INFO - verify_backend.py:107 - Testing Dashboard Statistics calculation...
+2026-07-02 14:20:45,910 - daily_tracker - INFO - connection.py:35 - Database tables initialized successfully.
+2026-07-02 14:20:45,927 - daily_tracker - INFO - verify_backend.py:113 - Testing CSV/Excel Reports generation...
+2026-07-02 14:20:45,945 - daily_tracker - INFO - import_export_service.py:314 - CSV exported successfully to test_productivity.csv
+2026-07-02 14:20:46,349 - daily_tracker - INFO - import_export_service.py:327 - Excel exported successfully to test_productivity.xlsx
+2026-07-02 14:20:46,369 - daily_tracker - INFO - import_export_service.py:434 - PDF exported successfully to test_productivity.pdf
+2026-07-02 14:20:46,370 - daily_tracker - INFO - verify_backend.py:148 - Cleaning up verification items from database...
+2026-07-02 14:20:46,372 - daily_tracker - INFO - connection.py:35 - Database tables initialized successfully.
+2026-07-02 14:20:46,395 - daily_tracker - INFO - verify_backend.py:160 - Verification checks completed successfully! All checks passed.
+2026-07-02 14:35:51,854 - daily_tracker - INFO - main.py:23 - Starting Daily Office Work Tracker application...
+2026-07-02 14:35:51,855 - daily_tracker - INFO - connection.py:25 - Initializing database engine at: d:\SUJIN\Professional\python_daily_tracker\tracker.db
+2026-07-02 14:35:52,062 - daily_tracker - INFO - connection.py:35 - Database tables initialized successfully.
+2026-07-02 14:35:52,063 - daily_tracker - INFO - connection.py:35 - Database tables initialized successfully.
+2026-07-02 14:35:52,092 - daily_tracker - INFO - main.py:17 - Database is empty. Seeding default data...
+2026-07-02 14:35:52,095 - daily_tracker - INFO - connection.py:35 - Database tables initialized successfully.
+2026-07-02 14:35:52,096 - daily_tracker - INFO - connection.py:35 - Database tables initialized successfully.
+2026-07-02 14:35:52,097 - daily_tracker - INFO - seed_db.py:19 - Seeding categories...
+2026-07-02 14:35:52,102 - daily_tracker - INFO - seed_db.py:24 - Added category: Design
+2026-07-02 14:35:52,107 - daily_tracker - INFO - seed_db.py:24 - Added category: GIS
+2026-07-02 14:35:52,110 - daily_tracker - INFO - seed_db.py:24 - Added category: Development
+2026-07-02 14:35:52,112 - daily_tracker - INFO - seed_db.py:24 - Added category: QA
+2026-07-02 14:35:52,113 - daily_tracker - INFO - seed_db.py:24 - Added category: Documentation
+2026-07-02 14:35:52,115 - daily_tracker - INFO - seed_db.py:24 - Added category: Meeting
+2026-07-02 14:35:52,116 - daily_tracker - INFO - seed_db.py:24 - Added category: Site Work
+2026-07-02 14:35:52,118 - daily_tracker - INFO - seed_db.py:24 - Added category: Research
+2026-07-02 14:35:52,119 - daily_tracker - INFO - seed_db.py:24 - Added category: Training
+2026-07-02 14:35:52,120 - daily_tracker - INFO - seed_db.py:24 - Added category: Support
+2026-07-02 14:35:52,122 - daily_tracker - INFO - seed_db.py:24 - Added category: Administration
+2026-07-02 14:35:52,123 - daily_tracker - INFO - seed_db.py:24 - Added category: Other
+2026-07-02 14:35:52,123 - daily_tracker - INFO - seed_db.py:38 - Seeding projects...
+2026-07-02 14:35:52,125 - daily_tracker - INFO - seed_db.py:43 - Added project: FTTH Project
+2026-07-02 14:35:52,129 - daily_tracker - INFO - seed_db.py:43 - Added project: GIS Migration
+2026-07-02 14:35:52,130 - daily_tracker - INFO - seed_db.py:43 - Added project: Telecom Survey
+2026-07-02 14:35:52,132 - daily_tracker - INFO - seed_db.py:43 - Added project: Utility Mapping
+2026-07-02 14:35:52,133 - daily_tracker - INFO - seed_db.py:43 - Added project: Internal Development
+2026-07-02 14:35:52,134 - daily_tracker - INFO - seed_db.py:43 - Added project: Customer Support
+2026-07-02 14:35:52,135 - daily_tracker - INFO - seed_db.py:56 - Seeding assigned_by...
+2026-07-02 14:35:52,137 - daily_tracker - INFO - seed_db.py:61 - Added assigned_by: Manager
+2026-07-02 14:35:52,140 - daily_tracker - INFO - seed_db.py:61 - Added assigned_by: Team Lead
+2026-07-02 14:35:52,141 - daily_tracker - INFO - seed_db.py:61 - Added assigned_by: Client
+2026-07-02 14:35:52,142 - daily_tracker - INFO - seed_db.py:61 - Added assigned_by: Self
+2026-07-02 14:35:52,144 - daily_tracker - INFO - seed_db.py:61 - Added assigned_by: Other
+2026-07-02 14:35:52,160 - daily_tracker - INFO - seed_db.py:66 - Seeding complete.
+2026-07-02 14:36:00,971 - daily_tracker - INFO - connection.py:35 - Database tables initialized successfully.
+2026-07-02 14:36:01,009 - daily_tracker - INFO - connection.py:35 - Database tables initialized successfully.
+2026-07-02 14:36:01,014 - daily_tracker - INFO - connection.py:35 - Database tables initialized successfully.
+2026-07-02 14:36:01,017 - daily_tracker - INFO - connection.py:35 - Database tables initialized successfully.
+2026-07-02 14:36:01,019 - daily_tracker - INFO - connection.py:35 - Database tables initialized successfully.
+2026-07-02 14:36:01,022 - daily_tracker - INFO - connection.py:35 - Database tables initialized successfully.
+2026-07-02 14:36:01,025 - daily_tracker - INFO - connection.py:35 - Database tables initialized successfully.
+2026-07-02 14:36:01,027 - daily_tracker - INFO - connection.py:35 - Database tables initialized successfully.
+2026-07-02 14:36:01,229 - daily_tracker - INFO - connection.py:35 - Database tables initialized successfully.
+2026-07-02 14:36:02,247 - daily_tracker - INFO - connection.py:35 - Database tables initialized successfully.
+2026-07-02 14:36:02,252 - daily_tracker - INFO - connection.py:35 - Database tables initialized successfully.
+2026-07-02 14:36:02,256 - daily_tracker - INFO - connection.py:35 - Database tables initialized successfully.
+2026-07-02 14:36:02,260 - daily_tracker - INFO - connection.py:35 - Database tables initialized successfully.
+2026-07-02 14:36:02,273 - daily_tracker - INFO - connection.py:35 - Database tables initialized successfully.
+2026-07-02 14:36:02,278 - daily_tracker - INFO - connection.py:35 - Database tables initialized successfully.
+2026-07-02 14:36:02,281 - daily_tracker - INFO - connection.py:35 - Database tables initialized successfully.
+2026-07-02 14:36:02,285 - daily_tracker - INFO - connection.py:35 - Database tables initialized successfully.
+2026-07-02 14:36:02,294 - daily_tracker - INFO - connection.py:35 - Database tables initialized successfully.
+2026-07-02 14:36:02,300 - daily_tracker - INFO - connection.py:35 - Database tables initialized successfully.
+2026-07-02 14:36:02,306 - daily_tracker - INFO - connection.py:35 - Database tables initialized successfully.
+2026-07-02 14:36:02,330 - daily_tracker - INFO - connection.py:35 - Database tables initialized successfully.
+2026-07-02 14:36:02,334 - daily_tracker - INFO - connection.py:35 - Database tables initialized successfully.
+2026-07-02 14:36:02,337 - daily_tracker - INFO - connection.py:35 - Database tables initialized successfully.
+2026-07-02 14:36:02,471 - daily_tracker - INFO - connection.py:35 - Database tables initialized successfully.
+2026-07-02 14:36:02,483 - daily_tracker - INFO - connection.py:35 - Database tables initialized successfully.
+2026-07-02 14:36:02,486 - daily_tracker - INFO - connection.py:35 - Database tables initialized successfully.
+2026-07-02 14:36:02,489 - daily_tracker - INFO - connection.py:35 - Database tables initialized successfully.
+2026-07-02 14:36:02,492 - daily_tracker - INFO - connection.py:35 - Database tables initialized successfully.
+2026-07-02 14:36:02,494 - daily_tracker - INFO - connection.py:35 - Database tables initialized successfully.
+2026-07-02 14:36:02,497 - daily_tracker - INFO - connection.py:35 - Database tables initialized successfully.
+2026-07-02 14:36:02,501 - daily_tracker - INFO - connection.py:35 - Database tables initialized successfully.
+2026-07-02 14:36:02,661 - daily_tracker - INFO - connection.py:35 - Database tables initialized successfully.
+2026-07-02 14:36:52,581 - daily_tracker - INFO - connection.py:35 - Database tables initialized successfully.
+2026-07-02 14:36:55,309 - daily_tracker - INFO - connection.py:35 - Database tables initialized successfully.
+2026-07-02 14:36:55,312 - daily_tracker - INFO - connection.py:35 - Database tables initialized successfully.
+2026-07-02 14:36:55,318 - daily_tracker - INFO - connection.py:35 - Database tables initialized successfully.
+2026-07-02 14:36:55,321 - daily_tracker - INFO - connection.py:35 - Database tables initialized successfully.
+2026-07-02 14:36:57,734 - daily_tracker - INFO - connection.py:35 - Database tables initialized successfully.
+2026-07-02 14:36:57,744 - daily_tracker - INFO - connection.py:35 - Database tables initialized successfully.
+2026-07-02 14:36:57,747 - daily_tracker - INFO - connection.py:35 - Database tables initialized successfully.
+2026-07-02 14:36:57,750 - daily_tracker - INFO - connection.py:35 - Database tables initialized successfully.
+2026-07-02 14:36:57,752 - daily_tracker - INFO - connection.py:35 - Database tables initialized successfully.
+2026-07-02 14:36:57,755 - daily_tracker - INFO - connection.py:35 - Database tables initialized successfully.
+2026-07-02 14:36:57,758 - daily_tracker - INFO - connection.py:35 - Database tables initialized successfully.
+2026-07-02 14:36:57,761 - daily_tracker - INFO - connection.py:35 - Database tables initialized successfully.
+2026-07-02 14:36:57,900 - daily_tracker - INFO - connection.py:35 - Database tables initialized successfully.
+2026-07-02 14:37:09,138 - daily_tracker - INFO - connection.py:35 - Database tables initialized successfully.
+2026-07-02 14:37:09,141 - daily_tracker - INFO - connection.py:35 - Database tables initialized successfully.
+2026-07-02 14:37:09,143 - daily_tracker - INFO - connection.py:35 - Database tables initialized successfully.
+2026-07-02 14:37:09,146 - daily_tracker - INFO - connection.py:35 - Database tables initialized successfully.
