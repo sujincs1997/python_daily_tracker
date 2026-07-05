@@ -299,6 +299,14 @@ class ProjectsView(QWidget):
         self.btn_clear.clicked.connect(self.clear_fields)
         fc_layout.addWidget(self.btn_clear)
         
+        self.btn_upload_excel = QPushButton("Upload Projects List (Excel)", self.form_card)
+        self.btn_upload_excel.clicked.connect(self.upload_projects_excel)
+        fc_layout.addWidget(self.btn_upload_excel)
+        
+        self.btn_export_excel = QPushButton("Export Projects List (Excel)", self.form_card)
+        self.btn_export_excel.clicked.connect(self.export_projects_excel)
+        fc_layout.addWidget(self.btn_export_excel)
+        
         fc_layout.addStretch()
         split_layout.addWidget(self.form_card, stretch=1)
         
@@ -360,6 +368,43 @@ class ProjectsView(QWidget):
             self.refresh_projects()
         else:
             QMessageBox.critical(self, "Error", "Could not add project (might be duplicate name).")
+
+    def upload_projects_excel(self):
+        """Allows importing projects from Excel directly."""
+        from app.services.import_export_service import ImportExportService
+        filepath, _ = QFileDialog.getOpenFileName(self, "Open Projects Excel Sheet", "", "Excel Files (*.xlsx *.xls)")
+        if filepath:
+            count = ImportExportService.import_projects_from_excel(filepath)
+            if count > 0:
+                QMessageBox.information(self, "Import Complete", f"Successfully imported {count} new projects.")
+                self.refresh_projects()
+            else:
+                QMessageBox.warning(self, "Import Status", "No new projects were imported. Verify file schema format.")
+
+    def export_projects_excel(self):
+        """Allows exporting projects to Excel directly."""
+        import pandas as pd
+        from app.database.connection import get_db_session
+        from app.models.project import Project
+        
+        filepath, _ = QFileDialog.getSaveFileName(self, "Save Projects Excel Sheet", "", "Excel Files (*.xlsx)")
+        if filepath:
+            try:
+                with get_db_session() as session:
+                    projects = session.query(Project).all()
+                    data = []
+                    for p in projects:
+                        data.append({
+                            "project_name": p.project_name,
+                            "description": p.description,
+                            "active": "Yes" if p.active else "No"
+                        })
+                    
+                    df = pd.DataFrame(data)
+                    df.to_excel(filepath, index=False)
+                    QMessageBox.information(self, "Export Complete", f"Successfully exported {len(data)} projects to Excel.")
+            except Exception as e:
+                QMessageBox.critical(self, "Export Error", f"Failed to export projects: {e}")
 
     def update_project(self):
         if not self.selected_project_id:
@@ -471,6 +516,14 @@ class CategoriesView(QWidget):
         self.btn_clear.clicked.connect(self.clear_fields)
         fc_layout.addWidget(self.btn_clear)
         
+        self.btn_upload_excel = QPushButton("Upload Categories List (Excel)", self.form_card)
+        self.btn_upload_excel.clicked.connect(self.upload_categories_excel)
+        fc_layout.addWidget(self.btn_upload_excel)
+        
+        self.btn_export_excel = QPushButton("Export Categories List (Excel)", self.form_card)
+        self.btn_export_excel.clicked.connect(self.export_categories_excel)
+        fc_layout.addWidget(self.btn_export_excel)
+        
         fc_layout.addStretch()
         split_layout.addWidget(self.form_card, stretch=1)
         
@@ -515,6 +568,41 @@ class CategoriesView(QWidget):
             self.refresh_categories()
         else:
             QMessageBox.critical(self, "Error", "Could not add category (duplicate name).")
+
+    def upload_categories_excel(self):
+        """Allows importing categories from Excel directly."""
+        from app.services.import_export_service import ImportExportService
+        filepath, _ = QFileDialog.getOpenFileName(self, "Open Categories Excel Sheet", "", "Excel Files (*.xlsx *.xls)")
+        if filepath:
+            count = ImportExportService.import_categories_from_excel(filepath)
+            if count > 0:
+                QMessageBox.information(self, "Import Complete", f"Successfully imported {count} new categories.")
+                self.refresh_categories()
+            else:
+                QMessageBox.warning(self, "Import Status", "No new categories were imported. Verify file schema format.")
+
+    def export_categories_excel(self):
+        """Allows exporting categories to Excel directly."""
+        import pandas as pd
+        from app.database.connection import get_db_session
+        from app.models.category import Category
+        
+        filepath, _ = QFileDialog.getSaveFileName(self, "Save Categories Excel Sheet", "", "Excel Files (*.xlsx)")
+        if filepath:
+            try:
+                with get_db_session() as session:
+                    categories = session.query(Category).all()
+                    data = []
+                    for c in categories:
+                        data.append({
+                            "category_name": c.category_name
+                        })
+                    
+                    df = pd.DataFrame(data)
+                    df.to_excel(filepath, index=False)
+                    QMessageBox.information(self, "Export Complete", f"Successfully exported {len(data)} categories to Excel.")
+            except Exception as e:
+                QMessageBox.critical(self, "Export Error", f"Failed to export categories: {e}")
 
     def delete_category(self):
         if not self.selected_category_id:
@@ -609,6 +697,14 @@ class AssignedByView(QWidget):
         self.btn_clear.clicked.connect(self.clear_fields)
         fc_layout.addWidget(self.btn_clear)
         
+        self.btn_upload_excel = QPushButton("Upload Assignees List (Excel)", self.form_card)
+        self.btn_upload_excel.clicked.connect(self.upload_assignees_excel)
+        fc_layout.addWidget(self.btn_upload_excel)
+        
+        self.btn_export_excel = QPushButton("Export Assignees List (Excel)", self.form_card)
+        self.btn_export_excel.clicked.connect(self.export_assignees_excel)
+        fc_layout.addWidget(self.btn_export_excel)
+        
         fc_layout.addStretch()
         split_layout.addWidget(self.form_card, stretch=1)
         
@@ -675,3 +771,39 @@ class AssignedByView(QWidget):
                 self.refresh_assigned_by()
             else:
                 QMessageBox.critical(self, "Failed", "Could not delete assignee. Check that they are not referenced in tasks.")
+
+    def upload_assignees_excel(self):
+        """Allows importing assignees from Excel directly."""
+        from app.services.import_export_service import ImportExportService
+        filepath, _ = QFileDialog.getOpenFileName(self, "Open Assignee Excel Sheet", "", "Excel Files (*.xlsx *.xls)")
+        if filepath:
+            count = ImportExportService.import_assigned_by_from_excel(filepath)
+            if count > 0:
+                QMessageBox.information(self, "Import Complete", f"Successfully imported {count} new assignee profiles.")
+                self.refresh_assigned_by()
+            else:
+                QMessageBox.warning(self, "Import Status", "No new assignee profiles were imported. Verify file schema format.")
+
+    def export_assignees_excel(self):
+        """Allows exporting assignees to Excel directly."""
+        import pandas as pd
+        from app.database.connection import get_db_session
+        from app.models.assigned_by import AssignedBy
+        
+        filepath, _ = QFileDialog.getSaveFileName(self, "Save Assignee Excel Sheet", "", "Excel Files (*.xlsx)")
+        if filepath:
+            try:
+                with get_db_session() as session:
+                    assignees = session.query(AssignedBy).all()
+                    data = []
+                    for a in assignees:
+                        data.append({
+                            "person_name": a.person_name,
+                            "designation": a.designation
+                        })
+                    
+                    df = pd.DataFrame(data)
+                    df.to_excel(filepath, index=False)
+                    QMessageBox.information(self, "Export Complete", f"Successfully exported {len(data)} assignee profiles to Excel.")
+            except Exception as e:
+                QMessageBox.critical(self, "Export Error", f"Failed to export assignee profiles: {e}")

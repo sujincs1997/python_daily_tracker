@@ -8,6 +8,7 @@ from app.models.task import Task
 class NotificationService(QObject):
     # Signals to UI
     notify = Signal(str, str)  # Emits (title, message)
+    ask_still_working = Signal(str, str)  # Emits (task_uuid, task_title)
 
     def __init__(self, timer_service):
         super().__init__()
@@ -15,6 +16,7 @@ class NotificationService(QObject):
         
         # Connect to task timer ticks to monitor single task duration
         self.timer_service.tick.connect(self._check_task_duration)
+        self.timer_service.status_changed.connect(self._handle_timer_status_change)
         
         # Internal timers for background checks
         self.check_timer = QTimer(self)
@@ -23,6 +25,7 @@ class NotificationService(QObject):
         
         # Track timers in minutes/seconds
         self.break_timer_seconds: int = 0
+        self.idle_task_seconds: int = 0
         self.eod_notified_today: bool = False
         self.incomplete_notified_today: bool = False
         self.last_checked_day: int = datetime.now().day
@@ -53,19 +56,35 @@ class NotificationService(QObject):
         """Resets the break timer (e.g. when user takes a break)."""
         self.break_timer_seconds = 0
 
+    def _handle_timer_status_change(self, status: str):
+        """Resets idle task count whenever the timer state changes (start, stop, pause, resume)."""
+        self.idle_task_seconds = 0
+
     def _check_task_duration(self, formatted_time: str, elapsed_seconds: int):
         """Triggered on every timer service tick to monitor running task duration."""
         cfg = config_manager.get("notifications", {})
-        if not cfg.get("task_duration_warning", True):
-            return
-
-        warning_secs = cfg.get("task_warning_hours", 2) * 3600
         
-        # Trigger reminder exactly at multiples of 2 hours
-        if elapsed_seconds > 0 and elapsed_seconds % warning_secs == 0:
-            hours = elapsed_seconds // 3600
-            logger.info(f"Task running for {hours} hours. Sending alert.")
-            self.notify.emit("Long-Running Task", f"Your current task has been running for {hours} hours. Remember to update its status or take a break!")
+        # 1. Standard 2-hour task duration warning
+        if cfg.get("task_duration_warning", True):
+            warning_secs = cfg.get("task_warning_hours", 2) * 3600
+            # Trigger reminder exactly at multiples of 2 hours
+            if elapsed_seconds > 0 and elapsed_seconds % warning_secs == 0:
+                hours = elapsed_seconds // 3600
+                logger.info(f"Task running for {hours} hours. Sending alert.")
+                self.notify.emit("Long-Running Task", f"Your current task has been running for {hours} hours. Remember to update its status or take a break!")
+
+        # 2. 30-minute idle prompt check (1800 seconds)
+        self.idle_task_seconds += 1
+        idle_interval_secs = cfg.get("idle_check_minutes", 30) * 60
+        if self.idle_task_seconds >= idle_interval_secs:
+            self.idle_task_seconds = 0
+            active_uuid = self.timer_service.current_task_uuid
+            if active_uuid:
+                with get_db_session() as session:
+                    task = session.query(Task).filter_by(uuid=active_uuid).first()
+                    title = task.title if task else "Running Task"
+                logger.info(f"30-minute idle check triggered for task {active_uuid}.")
+                self.ask_still_working.emit(active_uuid, title)
 
     def _perform_periodic_checks(self):
         """Checks for end-of-day and incomplete tasks every minute."""

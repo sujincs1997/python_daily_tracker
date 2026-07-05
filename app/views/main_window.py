@@ -3,12 +3,47 @@ from PySide6.QtWidgets import (
     QMainWindow, QWidget, QHBoxLayout, QVBoxLayout, QFrame, 
     QListWidget, QStackedWidget, QLabel, QMessageBox, QSystemTrayIcon, QStyle
 )
-from PySide6.QtCore import Qt, Slot
+from PySide6.QtCore import Qt, Slot, QTimer
 from PySide6.QtGui import QKeySequence, QShortcut, QCloseEvent
 
 # Style Sheets
 from app.views.styles import DARK_THEME, LIGHT_THEME
 from app.utils.logger import logger
+
+class TimeoutMessageBox(QMessageBox):
+    """Custom QMessageBox with countdown timer that clicks 'No' on timeout."""
+    def __init__(self, timeout_secs, title, text, parent=None):
+        super().__init__(parent)
+        self.timeout_secs = timeout_secs
+        self.remaining = timeout_secs
+        self.setWindowTitle(title)
+        self.setText(text)
+        self.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
+        self.setDefaultButton(QMessageBox.Yes)
+        
+        self.timer = QTimer(self)
+        self.timer.timeout.connect(self._tick)
+        
+    def showEvent(self, event):
+        super().showEvent(event)
+        self._update_text()
+        self.timer.start(1000)
+        
+    def _tick(self):
+        self.remaining -= 1
+        if self.remaining <= 0:
+            self.timer.stop()
+            # Default to 'No' (idle / stopped working)
+            no_btn = self.button(QMessageBox.No)
+            if no_btn:
+                no_btn.click()
+            else:
+                self.reject()
+        else:
+            self._update_text()
+            
+    def _update_text(self):
+        self.setInformativeText(f"This prompt will auto-decline (Stop Task) in {self.remaining} seconds if there is no response.")
 
 class MainWindow(QMainWindow):
     def __init__(self, controller):
@@ -29,6 +64,7 @@ class MainWindow(QMainWindow):
         
         # Connect Notification Service
         self.controller.notification_service.notify.connect(self.show_desktop_notification)
+        self.controller.notification_service.ask_still_working.connect(self.prompt_still_working)
         self.controller.notification_service.start_break_monitoring()
         
         # Theme Changes listener
@@ -230,6 +266,45 @@ class MainWindow(QMainWindow):
         else:
             logger.warning(f"Notifications not supported. Alert: {title} - {message}")
             QMessageBox.information(self, title, message)
+
+    @Slot(str, str)
+    def prompt_still_working(self, task_uuid, task_title):
+        """Prompts the user to check if they are still working on the active task."""
+        logger.info(f"Displaying activity check prompt for task {task_uuid}.")
+        
+        dialog = TimeoutMessageBox(
+            timeout_secs=60,
+            title="Activity Check",
+            text=f"Are you still working on the task:\n'{task_title}'?",
+            parent=self
+        )
+        
+        result = dialog.exec()
+        
+        if result == QMessageBox.No:
+            logger.info(f"User selected 'No' or prompt timed out for task {task_uuid}. Stopping task.")
+            # Stop timer and auto-save stats
+            stats = self.controller.timer_service.stop()
+            if stats:
+                # Update task status to Paused and duration in DB
+                self.controller.task_controller.update_task(
+                    task_id=stats["task_id"],
+                    data={
+                        "duration": stats["duration"],
+                        "start_time": stats["start_time"],
+                        "end_time": stats["end_time"],
+                        "status": "Paused"
+                    }
+                )
+            
+            # Switch to Task History tab to select new task
+            self.nav_list.setCurrentRow(3)
+            QMessageBox.information(
+                self, "Task Paused", 
+                "The active task timer has been stopped and saved as 'Paused' due to inactivity or selection.\n\nPlease select or create a new task."
+            )
+        else:
+            logger.info(f"User is still working on task {task_uuid}. Continuing tracking.")
 
     def closeEvent(self, event: QCloseEvent):
         """Intercepts window close to warning user if timer is active."""

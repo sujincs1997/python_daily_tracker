@@ -5,9 +5,37 @@ from PySide6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit, QTextEdit, 
     QComboBox, QDoubleSpinBox, QSlider, QPushButton, QFrame, QMessageBox, QScrollArea
 )
-from PySide6.QtCore import Qt, Slot
+from PySide6.QtCore import Qt, Slot, QThread, Signal
+import speech_recognition as sr
 
 from app.utils.logger import logger
+
+class VoiceWorker(QThread):
+    finished = Signal(str, bool)  # Emits (recognized_text, success)
+    status_changed = Signal(str)  # Emits status updates
+
+    def run(self):
+        r = sr.Recognizer()
+        r.pause_threshold = 0.8
+        try:
+            with sr.Microphone() as source:
+                self.status_changed.emit("🎤 Calibrating...")
+                r.adjust_for_ambient_noise(source, duration=0.8)
+                
+                self.status_changed.emit("🎤 Listening...")
+                audio = r.listen(source, timeout=5, phrase_time_limit=15)
+                
+                self.status_changed.emit("⏳ Dictating...")
+                text = r.recognize_google(audio)
+                self.finished.emit(text, True)
+        except sr.WaitTimeoutError:
+            self.finished.emit("Listening timed out. No speech detected.", False)
+        except sr.UnknownValueError:
+            self.finished.emit("Could not understand audio. Try speaking closer to mic.", False)
+        except sr.RequestError as e:
+            self.finished.emit(f"Speech recognition service error: {e}", False)
+        except Exception as e:
+            self.finished.emit(f"Microphone error: {e}", False)
 
 class TaskFormView(QWidget):
     def __init__(self, controller, parent=None):
@@ -84,9 +112,19 @@ class TaskFormView(QWidget):
         info_layout.addWidget(self.txt_title)
 
         # Description
-        info_layout.addWidget(QLabel("Description", card_info))
+        desc_label_layout = QHBoxLayout()
+        desc_label_layout.addWidget(QLabel("Description", card_info))
+        
+        self.btn_voice_desc = QPushButton("🎙️ Record Voice", card_info)
+        self.btn_voice_desc.setStyleSheet("max-width: 120px; font-size: 11px; padding: 3px 8px;")
+        self.btn_voice_desc.clicked.connect(self.record_voice_description)
+        desc_label_layout.addWidget(self.btn_voice_desc)
+        desc_label_layout.addStretch()
+        
+        info_layout.addLayout(desc_label_layout)
+        
         self.txt_desc = QTextEdit(card_info)
-        self.txt_desc.setPlaceholderText("Provide details about what needs to be done...")
+        self.txt_desc.setPlaceholderText("Provide details about what needs to be done (or click 🎙️ Record Voice to dictate)...")
         self.txt_desc.setMaximumHeight(80)
         info_layout.addWidget(self.txt_desc)
 
@@ -125,12 +163,14 @@ class TaskFormView(QWidget):
         pri_box = QVBoxLayout()
         pri_box.addWidget(QLabel("Priority", card_info))
         self.cmb_priority = QComboBox(card_info)
+        pri_box.addWidget(self.cmb_priority)
         more_dropdowns.addLayout(pri_box)
         
         # Status
         stat_box = QVBoxLayout()
         stat_box.addWidget(QLabel("Status", card_info))
         self.cmb_status = QComboBox(card_info)
+        stat_box.addWidget(self.cmb_status)
         more_dropdowns.addLayout(stat_box)
         
         # Est Hours
@@ -176,14 +216,9 @@ class TaskFormView(QWidget):
         self.btn_save.clicked.connect(self.save_task)
         buttons_layout.addWidget(self.btn_save)
         
-        self.btn_pause = QPushButton("Pause Timer", form_container)
-        self.btn_pause.clicked.connect(self.pause_form_timer)
-        buttons_layout.addWidget(self.btn_pause)
-        
-        self.btn_resume = QPushButton("Resume Timer", form_container)
-        self.btn_resume.setObjectName("SuccessButton")
-        self.btn_resume.clicked.connect(self.resume_form_timer)
-        buttons_layout.addWidget(self.btn_resume)
+        self.btn_pause_resume = QPushButton("Pause Timer", form_container)
+        self.btn_pause_resume.clicked.connect(self.toggle_form_pause_resume)
+        buttons_layout.addWidget(self.btn_pause_resume)
         
         self.btn_stop = QPushButton("Stop & Save", form_container)
         self.btn_stop.setObjectName("DangerButton")
@@ -401,28 +436,84 @@ class TaskFormView(QWidget):
         """Updates the state of timer control buttons on the form."""
         is_running = self.controller.timer_service.is_running
         active_task_id = self.controller.timer_service.current_task_id
-        
-        # If this task is the active task
         is_this_active = (self.editing_task_id and active_task_id == self.editing_task_id)
+        
+        # Query task status from database if editing
+        task_status = "Not Started"
+        if self.editing_task_id:
+            task = self.controller.task_controller.get_task_by_id(self.editing_task_id)
+            if task:
+                task_status = task.get("status", "Not Started")
         
         if is_this_active and is_running:
             is_paused = self.controller.timer_service.is_paused
-            self.btn_pause.setEnabled(not is_paused)
-            self.btn_resume.setEnabled(is_paused)
+            self.btn_pause_resume.setEnabled(True)
+            if is_paused:
+                self.btn_pause_resume.setText("Resume Timer")
+                self.btn_pause_resume.setObjectName("SuccessButton")
+            else:
+                self.btn_pause_resume.setText("Pause Timer")
+                self.btn_pause_resume.setObjectName("")
+                
             self.btn_stop.setEnabled(True)
             self.lbl_form_clock.setVisible(True)
         else:
-            self.btn_pause.setEnabled(False)
-            self.btn_resume.setEnabled(False)
-            self.btn_stop.setEnabled(False)
+            # If the task is completed or cancelled, starting/resuming is not allowed
+            if task_status in ["Completed", "Cancelled"]:
+                self.btn_pause_resume.setEnabled(False)
+                self.btn_pause_resume.setText("Start Timer")
+                self.btn_pause_resume.setObjectName("")
+                self.btn_stop.setEnabled(False)
+            else:
+                self.btn_pause_resume.setEnabled(True)
+                if task_status == "Paused":
+                    self.btn_pause_resume.setText("Resume Timer")
+                    self.btn_pause_resume.setObjectName("SuccessButton")
+                else:
+                    self.btn_pause_resume.setText("Start Timer")
+                    self.btn_pause_resume.setObjectName("SuccessButton")
+                self.btn_stop.setEnabled(False)
+            
             self.lbl_form_clock.setVisible(False)
             
-    def pause_form_timer(self):
-        self.controller.timer_service.pause()
-        self.update_form_timer_buttons()
+        # Refresh stylesheet to apply SuccessButton styling
+        self.btn_pause_resume.style().unpolish(self.btn_pause_resume)
+        self.btn_pause_resume.style().polish(self.btn_pause_resume)
+            
+    def toggle_form_pause_resume(self):
+        """Toggles between pause and resume states on the form."""
+        is_running = self.controller.timer_service.is_running
+        active_task_id = self.controller.timer_service.current_task_id
+        is_this_active = (self.editing_task_id and active_task_id == self.editing_task_id)
         
-    def resume_form_timer(self):
-        self.controller.timer_service.resume()
+        if is_this_active and is_running:
+            # Toggle pause/resume on active task
+            if self.controller.timer_service.is_paused:
+                self.controller.timer_service.resume()
+            else:
+                self.controller.timer_service.pause()
+        else:
+            # Start/resume this task in the timer service
+            if is_running:
+                reply = QMessageBox.question(
+                    self, "Timer Running",
+                    "Another task timer is currently active. Would you like to stop it and start this task?",
+                    QMessageBox.Yes | QMessageBox.No, QMessageBox.No
+                )
+                if reply == QMessageBox.Yes:
+                    self.controller.auto_save_active_task()
+                    self.controller.timer_service.stop()
+                else:
+                    return
+            
+            # Save active details and start the timer
+            task = self.save_task()
+            if not task:
+                return
+                
+            self.controller.task_controller.update_task(task["id"], {"status": "In Progress"})
+            self.controller.timer_service.start(task["id"], task["uuid"], task["duration"])
+            
         self.update_form_timer_buttons()
         
     def stop_form_timer(self):
@@ -494,6 +585,33 @@ class TaskFormView(QWidget):
             self.controller.task_controller.delete_task(self.editing_task_id)
             QMessageBox.information(self, "Discarded", "Task log discarded and deleted.")
             self.prepare_new_task()
+
+    def record_voice_description(self):
+        """Starts the background voice thread to dictate description."""
+        self.btn_voice_desc.setEnabled(False)
+        self.voice_worker = VoiceWorker()
+        self.voice_worker.status_changed.connect(self.on_voice_status_changed)
+        self.voice_worker.finished.connect(self.on_voice_finished)
+        self.voice_worker.start()
+        
+    def on_voice_status_changed(self, status: str):
+        self.btn_voice_desc.setText(status)
+        logger.info(f"Voice dictation status: {status}")
+        
+    def on_voice_finished(self, text: str, success: bool):
+        self.btn_voice_desc.setEnabled(True)
+        self.btn_voice_desc.setText("🎙️ Record Voice")
+        
+        if success:
+            current_text = self.txt_desc.toPlainText().strip()
+            if current_text:
+                new_text = current_text + " " + text
+            else:
+                new_text = text
+            self.txt_desc.setText(new_text)
+            logger.info("Voice dictation successful and text appended.")
+        else:
+            QMessageBox.warning(self, "Voice Input Error", text)
 
 
 class ActiveTimerWidget(QWidget):
